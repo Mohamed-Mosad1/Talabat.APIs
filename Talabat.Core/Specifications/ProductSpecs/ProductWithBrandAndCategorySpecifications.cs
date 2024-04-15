@@ -11,6 +11,16 @@ namespace Talabat.Core.Specifications.ProductSpecs
     {
         public ProductWithBrandAndCategorySpecifications() : base()
         {
+            AddInclude();
+        }
+
+
+        public ProductWithBrandAndCategorySpecifications(int id) : base(P => P.Id == id)
+        {
+            AddInclude();
+        }
+        private void AddInclude()
+        {
             Includes.Add(P => P.Brand);
             Includes.Add(P => P.Category);
         }
