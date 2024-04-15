@@ -1,5 +1,6 @@
 
 using Microsoft.EntityFrameworkCore;
+using Talabat.APIs.Helpers;
 using Talabat.Core.Entities;
 using Talabat.Core.Services.Contract;
 using Talabat.Repository;
@@ -25,6 +26,8 @@ namespace Talabat.APIs
             webApplicationBuilder.Services.AddDbContext<StoreContext>(options => options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("DefaultConnection")));
 
             webApplicationBuilder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+            webApplicationBuilder.Services.AddAutoMapper(typeof(MappingProfile));
 
             #endregion
 
@@ -64,6 +67,7 @@ namespace Talabat.APIs
 
             app.UseHttpsRedirection();
 
+            app.UseStaticFiles();
 
             app.MapControllers();
 
