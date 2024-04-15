@@ -15,7 +15,7 @@ namespace Talabat.Core.Specifications
 
         public BaseSpecifications()
         {
-
+            // Criteria = null
         }
 
         public BaseSpecifications(Expression<Func<T, bool>> criteriaExpression)
