@@ -1,6 +1,8 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
+using System.Text.Json;
 using Talabat.APIs.Error;
 using Talabat.APIs.Helpers;
 using Talabat.APIs.Middlewares;
@@ -63,6 +65,7 @@ namespace Talabat.APIs
             var _dbContext = services.GetRequiredService<StoreContext>();
 
             var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger<Program>();
 
             try
             {
@@ -72,8 +75,6 @@ namespace Talabat.APIs
             }
             catch (Exception ex)
             {
-                var logger = loggerFactory.CreateLogger<Program>();
-
                 logger.LogError(ex, "An Error has been occured during apply the migration");
             }
 
@@ -81,6 +82,29 @@ namespace Talabat.APIs
             #region Configure Kestrel Middlewares
 
             app.UseMiddleware<ExceptionMiddleware>();
+
+            ///app.Use(async (httpContext, _next) =>
+            ///{
+            ///    try
+            ///    {
+            ///        // Take An Action With the request
+            ///        await _next.Invoke(httpContext);
+            ///        // Take An Action With the response
+            ///    }
+            ///    catch (Exception ex)
+            ///    {
+            ///        logger.LogError(ex.Message); // Development
+            ///        httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            ///        httpContext.Response.ContentType = "application/json";
+            ///        var response = app.Environment.IsDevelopment() ?
+            ///            new ApiExceptionResponse((int)HttpStatusCode.InternalServerError, ex.Message, ex.StackTrace.ToString())
+            ///            :
+            ///            new ApiExceptionResponse((int)HttpStatusCode.InternalServerError);
+            ///        var options = new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+            ///        var json = JsonSerializer.Serialize(response, options);
+            ///        await httpContext.Response.WriteAsync(json);
+            ///    }
+            ///});
 
             if (app.Environment.IsDevelopment())
             {
