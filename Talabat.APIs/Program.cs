@@ -1,14 +1,6 @@
-
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Net;
-using System.Text.Json;
-using Talabat.APIs.Error;
-using Talabat.APIs.Helpers;
+using Talabat.APIs.Extentions;
 using Talabat.APIs.Middlewares;
-using Talabat.Core.Entities;
-using Talabat.Core.Services.Contract;
-using Talabat.Repository;
 using Talabat.Repository.Data;
 
 namespace Talabat.APIs
@@ -24,34 +16,12 @@ namespace Talabat.APIs
             #region Configure Services
 
             webApplicationBuilder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            webApplicationBuilder.Services.AddEndpointsApiExplorer();
 
-            webApplicationBuilder.Services.AddSwaggerGen();
+            webApplicationBuilder.Services.AddSwaggerServices();
 
             webApplicationBuilder.Services.AddDbContext<StoreContext>(options => options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("DefaultConnection")));
 
-            webApplicationBuilder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
-            webApplicationBuilder.Services.AddAutoMapper(typeof(MappingProfile));
-
-            webApplicationBuilder.Services.Configure<ApiBehaviorOptions>(options =>
-            {
-                options.InvalidModelStateResponseFactory = (actionContext =>
-                {
-                    var errors = actionContext.ModelState.Where(P => P.Value.Errors.Count() > 0)
-                                                         .SelectMany(P => P.Value.Errors)
-                                                         .Select(E => E.ErrorMessage)
-                                                         .ToList();
-
-                    var response = new ApiValidationErrorResponse()
-                    {
-                        Errors = errors
-                    };
-
-                    return new BadRequestObjectResult(response);
-                });
-            });
+            webApplicationBuilder.Services.addApplicationServices();
 
             #endregion
 
@@ -109,8 +79,7 @@ namespace Talabat.APIs
 
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerMiddleware();
             }
 
             app.UseStatusCodePagesWithReExecute("/errors/{0}");
