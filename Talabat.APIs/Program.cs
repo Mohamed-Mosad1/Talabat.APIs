@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Talabat.APIs.Error;
 using Talabat.APIs.Helpers;
+using Talabat.APIs.Middlewares;
 using Talabat.Core.Entities;
 using Talabat.Core.Services.Contract;
 using Talabat.Repository;
@@ -78,6 +79,8 @@ namespace Talabat.APIs
 
             // Configure the HTTP request pipeline.
             #region Configure Kestrel Middlewares
+
+            app.UseMiddleware<ExceptionMiddleware>();
 
             if (app.Environment.IsDevelopment())
             {
