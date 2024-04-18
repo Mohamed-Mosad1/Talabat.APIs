@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using Talabat.APIs.Dtos;
 using Talabat.APIs.Error;
 using Talabat.Core.Entities;
@@ -13,17 +14,25 @@ namespace Talabat.APIs.Controllers
     public class ProductsController : BaseApiController
     {
         private readonly IGenericRepository<Product> _productsRepository;
+        private readonly IGenericRepository<ProductBrand> _productBrandsRepository;
+        private readonly IGenericRepository<ProductCategory> _productCategoriesRepository;
         private readonly IMapper _mapper;
 
-        public ProductsController(IGenericRepository<Product> productsRepository, IMapper mapper)
+        public ProductsController(
+            IGenericRepository<Product> productsRepository, 
+            IGenericRepository<ProductBrand> productBrandsRepository, 
+            IGenericRepository<ProductCategory> productCategoriesRepository, 
+            IMapper mapper)
         {
             _productsRepository = productsRepository;
+            _productBrandsRepository = productBrandsRepository;
+            _productCategoriesRepository = productCategoriesRepository;
             _mapper = mapper;
         }
 
         // /api/Products
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+        public async Task<ActionResult<IEnumerable<ProductToReturnDto>>> GetProducts()
         {
             var spec = new ProductWithBrandAndCategorySpecifications();
 
@@ -38,7 +47,7 @@ namespace Talabat.APIs.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(ProductToReturnDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<Product>> GetProduct(int id)
+        public async Task<ActionResult<IEnumerable<ProductToReturnDto>>> GetProduct(int id)
         {
             var spec = new ProductWithBrandAndCategorySpecifications(id);
 
@@ -50,8 +59,27 @@ namespace Talabat.APIs.Controllers
             var result = _mapper.Map<Product, ProductToReturnDto>(product);
 
             return Ok(result); // 200
-
         }
+
+        // GET /api/Products/brands
+        [HttpGet("brands")]
+        public async Task<ActionResult<IEnumerable<ProductBrand>>> GetProductBrands()
+        {
+            var brands = await _productBrandsRepository.GetAllAsync();
+
+            return Ok(brands);
+        }
+
+        // GET /api/Products/categories
+        [HttpGet("categories")]
+        public async Task<ActionResult<IEnumerable<ProductCategory>>> GetProductCategories()
+        {
+            var categories = await _productCategoriesRepository.GetAllAsync();
+            
+            return Ok(categories);
+        }
+
+
 
 
     }
