@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Talabat.APIs.Helpers;
-using Talabat.Core.Services.Contract;
 using Talabat.Repository;
 using Talabat.APIs.Error;
+using Talabat.Core.Repositories.Contract;
 
 namespace Talabat.APIs.Extentions
 {

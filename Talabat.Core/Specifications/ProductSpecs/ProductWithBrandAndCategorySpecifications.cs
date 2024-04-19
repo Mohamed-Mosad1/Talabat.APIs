@@ -10,7 +10,7 @@ namespace Talabat.Core.Specifications.ProductSpecs
     public class ProductWithBrandAndCategorySpecifications : BaseSpecifications<Product>
     {
         public ProductWithBrandAndCategorySpecifications(ProductSpecParams specParams) 
-            : base(P => (!specParams.SortBrandId.HasValue || P.BrandId == specParams.SortBrandId.Value) && (!specParams.SortCategoryId.HasValue || P.CategoryId == specParams.SortCategoryId.Value))
+            : base(P => (!specParams.BrandId.HasValue || P.BrandId == specParams.BrandId.Value) && (!specParams.CategoryId.HasValue || P.CategoryId == specParams.CategoryId.Value))
         {
             AddInclude();
 

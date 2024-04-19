@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Talabat.Core.Entities;
-using Talabat.Core.Services.Contract;
+using Talabat.Core.Repositories.Contract;
 using Talabat.Core.Specifications;
 using Talabat.Repository.Data;
 
@@ -49,6 +49,11 @@ namespace Talabat.Repository
         private IQueryable<T> ApplySpecifications(ISpecification<T> spec)
         {
             return SpecificationsEvaluator<T>.GetQuery(_dbContext.Set<T>(), spec);
+        }
+
+        public async Task<int> GetCountAsync(ISpecification<T> spec)
+        {
+            return await ApplySpecifications(spec).CountAsync();
         }
     }
 }

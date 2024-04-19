@@ -19,7 +19,7 @@ namespace Talabat.Core.Specifications.ProductSpecs
 
         public int PageIndex { get; set; } = 1;
         public string? Sort { get; set; }
-        public int? SortBrandId { get; set; }
-        public int? SortCategoryId { get; set; }
+        public int? BrandId { get; set; }
+        public int? CategoryId { get; set; }
     }
 }
