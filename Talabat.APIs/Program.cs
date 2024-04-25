@@ -3,6 +3,7 @@ using StackExchange.Redis;
 using Talabat.APIs.Extentions;
 using Talabat.APIs.Middlewares;
 using Talabat.Repository.Data;
+using Talabat.Repository.Identity;
 
 namespace Talabat.APIs
 {
@@ -28,6 +29,11 @@ namespace Talabat.APIs
                 return ConnectionMultiplexer.Connect(connection);
             });
 
+            webApplicationBuilder.Services.AddDbContext<AppIdentityDbContext>(options =>
+            {
+                options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("IdentityConnection"));
+            });
+
             webApplicationBuilder.Services.addApplicationServices();
 
             #endregion
@@ -48,6 +54,10 @@ namespace Talabat.APIs
             try
             {
                 await _dbContext.Database.MigrateAsync(); // Update Database
+
+                var IdentityDbContext = services.GetRequiredService<AppIdentityDbContext>();
+
+                await IdentityDbContext.Database.MigrateAsync();
 
                 await StoreContextSeed.SeedAsync(_dbContext); // Data Seeding
             }

@@ -42,7 +42,7 @@ namespace Talabat.Core.Specifications.ProductSpecs
             // pageSize      = 5
             // pageIndex     = 3
 
-            ApplyPagination((specParams.PageIndex - 1) * specParams.PageSize, specParams.PageSize);
+            ApplyPagination(specParams.PageSize * (specParams.PageIndex - 1), specParams.PageSize);
         }
 
 
