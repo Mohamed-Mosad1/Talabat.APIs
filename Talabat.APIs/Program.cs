@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 using Talabat.APIs.Extentions;
 using Talabat.APIs.Middlewares;
+using Talabat.Core.Entities.Identity;
 using Talabat.Repository.Data;
 using Talabat.Repository.Identity;
 
@@ -34,6 +36,13 @@ namespace Talabat.APIs
                 options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("IdentityConnection"));
             });
 
+            webApplicationBuilder.Services.AddIdentity<AppUser, IdentityRole>(options =>
+            {
+                ///options.Password.RequireDigit = true;
+                ///options.Password.RequiredUniqueChars = 2;
+                ///options.Password.RequireNonAlphanumeric = true;
+            }).AddEntityFrameworkStores<AppIdentityDbContext>();
+
             webApplicationBuilder.Services.addApplicationServices();
 
             #endregion
@@ -60,6 +69,10 @@ namespace Talabat.APIs
                 await IdentityDbContext.Database.MigrateAsync();
 
                 await StoreContextSeed.SeedAsync(_dbContext); // Data Seeding
+
+                var _userManger = services.GetRequiredService<UserManager<AppUser>>();
+
+                await AppIdentityDbContextSeed.SeedUserAsync(_userManger);
             }
             catch (Exception ex)
             {
