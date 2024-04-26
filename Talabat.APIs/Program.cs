@@ -4,8 +4,10 @@ using StackExchange.Redis;
 using Talabat.APIs.Extentions;
 using Talabat.APIs.Middlewares;
 using Talabat.Core.Entities.Identity;
+using Talabat.Core.Services.Contract;
 using Talabat.Repository.Data;
 using Talabat.Repository.Identity;
+using Talabat.Service;
 
 namespace Talabat.APIs
 {
@@ -42,6 +44,8 @@ namespace Talabat.APIs
                 ///options.Password.RequiredUniqueChars = 2;
                 ///options.Password.RequireNonAlphanumeric = true;
             }).AddEntityFrameworkStores<AppIdentityDbContext>();
+
+            webApplicationBuilder.Services.AddScoped<ITokenServices, TokenServices>();
 
             webApplicationBuilder.Services.addApplicationServices();
 
@@ -117,6 +121,10 @@ namespace Talabat.APIs
             app.UseHttpsRedirection();
 
             app.UseStaticFiles();
+
+            app.UseAuthentication();
+
+            app.UseAuthorization();
 
             app.MapControllers();
 
