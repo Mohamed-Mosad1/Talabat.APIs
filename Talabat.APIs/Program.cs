@@ -45,9 +45,9 @@ namespace Talabat.APIs
                 ///options.Password.RequireNonAlphanumeric = true;
             }).AddEntityFrameworkStores<AppIdentityDbContext>();
 
-            webApplicationBuilder.Services.AddScoped<ITokenServices, TokenServices>();
-
             webApplicationBuilder.Services.addApplicationServices();
+
+            //webApplicationBuilder.Services.AddIdentityServices();
 
             #endregion
 
