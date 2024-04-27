@@ -12,7 +12,7 @@ using Talabat.Repository.Identity;
 namespace Talabat.Repository.Identity.Migrations
 {
     [DbContext(typeof(AppIdentityDbContext))]
-    [Migration("20240425163152_InitialCreate")]
+    [Migration("20240427142706_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -158,46 +158,6 @@ namespace Talabat.Repository.Identity.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Talabat.Core.Entities.Identity.Address", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AppUserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Street")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AppUserId")
-                        .IsUnique();
-
-                    b.ToTable("Address");
-                });
-
             modelBuilder.Entity("Talabat.Core.Entities.Identity.AppUser", b =>
                 {
                     b.Property<string>("Id")
@@ -267,6 +227,46 @@ namespace Talabat.Repository.Identity.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("Talabat.Core.Entities.Identity.UserAddress", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Street")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId")
+                        .IsUnique();
+
+                    b.ToTable("UserAddress");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -318,11 +318,11 @@ namespace Talabat.Repository.Identity.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Talabat.Core.Entities.Identity.Address", b =>
+            modelBuilder.Entity("Talabat.Core.Entities.Identity.UserAddress", b =>
                 {
                     b.HasOne("Talabat.Core.Entities.Identity.AppUser", "AppUser")
                         .WithOne("Address")
-                        .HasForeignKey("Talabat.Core.Entities.Identity.Address", "AppUserId")
+                        .HasForeignKey("Talabat.Core.Entities.Identity.UserAddress", "AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -331,8 +331,7 @@ namespace Talabat.Repository.Identity.Migrations
 
             modelBuilder.Entity("Talabat.Core.Entities.Identity.AppUser", b =>
                 {
-                    b.Navigation("Address")
-                        .IsRequired();
+                    b.Navigation("Address");
                 });
 #pragma warning restore 612, 618
         }

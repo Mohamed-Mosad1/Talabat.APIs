@@ -8,20 +8,20 @@ using Talabat.Core.Services.Contract;
 
 namespace Talabat.APIs.Controllers
 {
-    public class AccountsController : BaseApiController
+    public class AccountController : BaseApiController
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly ITokenServices _tokenServices;
 
-        public AccountsController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenServices tokenServices)
+        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenServices tokenServices)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _tokenServices = tokenServices;
         }
         // Register
-        [HttpPost("Register")] // POST : /api/Accounts/Register
+        [HttpPost("register")] // POST : /api/account/register
         public async Task<ActionResult<UserDto>> Register(RegisterDto model)
         {
             var user = new AppUser()
@@ -34,38 +34,34 @@ namespace Talabat.APIs.Controllers
 
             var result = await _userManager.CreateAsync(user, model.Password);
 
-            if (!result.Succeeded) return BadRequest(new ApiResponse(400));
+            if (!result.Succeeded) return BadRequest(new ApiValidationErrorResponse() { Errors = result.Errors.Select(E => E.Description) });
 
-            var returnedUser = new UserDto()
+            return Ok(new UserDto()
             {
                 DisplayName = user.DisplayName,
                 Email = user.Email,
                 Token = await _tokenServices.CreateTokenAsync(user, _userManager)
-            };
-
-            return Ok(returnedUser);
+            });
         }
 
         // Login
-        [HttpPost("Login")] // POST : /api/accounts/login
+        [HttpPost("login")] // POST : /api/account/login
         public async Task<ActionResult<UserDto>> Login(LoginDto model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
 
-            if (user is null) return Unauthorized(new ApiResponse(401));
+            if (user is null) return Unauthorized(new ApiResponse(401, "Login Failed"));
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
 
-            if (!result.Succeeded) return Unauthorized(new ApiResponse(401));
+            if (!result.Succeeded) return Unauthorized(new ApiResponse(401, "Login Failed"));
 
-            var returnedUser = new UserDto()
+            return Ok(new UserDto()
             {
                 DisplayName = user.DisplayName,
                 Email = user.Email,
                 Token = await _tokenServices.CreateTokenAsync(user, _userManager)
-            };
-
-            return Ok(returnedUser);
+            });
         }
 
 

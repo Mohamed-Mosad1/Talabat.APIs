@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Talabat.APIs.Dtos;
 using Talabat.APIs.Error;
 using Talabat.APIs.Helpers;
-using Talabat.Core.Entities;
+using Talabat.Core.Entities.Product;
 using Talabat.Core.Repositories.Contract;
 using Talabat.Core.Specifications;
 using Talabat.Core.Specifications.ProductSpecs;

@@ -1,9 +1,9 @@
 ﻿using StackExchange.Redis;
 using System.Text.Json;
-using Talabat.Core.Entities;
+using Talabat.Core.Entities.Basket;
 using Talabat.Core.Repositories.Contract;
 
-namespace Talabat.Repository
+namespace Talabat.Repository.Basket
 {
     public class BasketRepository : IBasketRepository
     {
