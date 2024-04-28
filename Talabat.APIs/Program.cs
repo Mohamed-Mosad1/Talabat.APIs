@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
+using System.Text;
 using Talabat.APIs.Extentions;
 using Talabat.APIs.Middlewares;
 using Talabat.Core.Entities.Identity;
@@ -25,7 +28,7 @@ namespace Talabat.APIs
 
             webApplicationBuilder.Services.AddSwaggerServices();
 
-            webApplicationBuilder.Services.addApplicationServices(); 
+            webApplicationBuilder.Services.addApplicationServices();
 
             webApplicationBuilder.Services.AddDbContext<StoreContext>(options => options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -47,10 +50,8 @@ namespace Talabat.APIs
                 ///options.Password.RequireNonAlphanumeric = true;
             }).AddEntityFrameworkStores<AppIdentityDbContext>();
 
-            webApplicationBuilder.Services.AddScoped(typeof(ITokenServices), typeof(TokenServices));
-
-
-            //webApplicationBuilder.Services.AddIdentityServices();
+            webApplicationBuilder.Services.AddIdentityServices(webApplicationBuilder.Configuration);
+            
 
             #endregion
 
