@@ -1,8 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Talabat.APIs.Dtos;
 using Talabat.APIs.Error;
+using Talabat.APIs.Extentions;
 using Talabat.Core.Entities.Identity;
 using Talabat.Core.Services.Contract;
 
@@ -13,12 +18,19 @@ namespace Talabat.APIs.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly ITokenServices _tokenServices;
+        private readonly IMapper _mapper;
 
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenServices tokenServices)
+        public AccountController(
+            UserManager<AppUser> userManager, 
+            SignInManager<AppUser> signInManager, 
+            ITokenServices tokenServices,
+            IMapper mapper
+            )
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _tokenServices = tokenServices;
+            _mapper = mapper;
         }
         // Register
         [HttpPost("register")] // POST : /api/account/register
@@ -59,9 +71,53 @@ namespace Talabat.APIs.Controllers
             return Ok(new UserDto()
             {
                 DisplayName = user.DisplayName,
-                Email = user.Email,
+                Email = user.Email ?? string.Empty,
                 Token = await _tokenServices.CreateTokenAsync(user, _userManager)
             });
+        }
+
+        [Authorize]
+        [HttpGet] // GET : /api/account
+        public async Task<ActionResult<UserDto>> GetCurrentUser()
+        {
+            var email = User.FindFirstValue(ClaimTypes.Email) ?? string.Empty;
+
+            var user = await _userManager.FindByEmailAsync(email);
+
+            return Ok(new UserDto()
+            {
+                DisplayName = user?.DisplayName ?? string.Empty,
+                Email = user?.Email ?? string.Empty,
+                Token = await _tokenServices.CreateTokenAsync(user, _userManager)
+            });
+        }
+
+        [Authorize]
+        [HttpGet("userAddress")] // GET : /api/account/userAddress
+        public async Task<ActionResult<UserAddressDto>> GetUserAddress()
+        {
+            var user = await _userManager.FindUserWithAddressAsync(User);
+
+            return Ok(_mapper.Map<UserAddressDto>(user.Address));
+        }
+
+        [Authorize]
+        [HttpPut("userAddress")] // PUT : /api/account/userAddress
+        public async Task<ActionResult<UserAddress>> UpdateUserAddress(UserAddressDto userAddress)
+        {
+            var updateAddress = _mapper.Map<UserAddress>(userAddress);
+
+            var user = await _userManager.FindUserWithAddressAsync(User);
+
+            updateAddress.Id = user.Address.Id;
+
+            user.Address = updateAddress;
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded) return BadRequest(new ApiValidationErrorResponse() { Errors = result.Errors.Select(E => E.Description) });
+
+            return Ok(userAddress);
         }
 
 
