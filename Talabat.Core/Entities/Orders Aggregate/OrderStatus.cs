@@ -5,17 +5,17 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Talabat.Core.Entities.Orders
+namespace Talabat.Core.Entities.Orders_Aggregate
 {
     public enum OrderStatus
     {
         [EnumMember(Value = "Pending")]
         Pending,
 
-        [EnumMember(Value = "PaymentSucceeded")]
+        [EnumMember(Value = "Payment Succeeded")]
         PaymentSucceeded,
 
-        [EnumMember(Value = "PaymentFailed")]
+        [EnumMember(Value = "Payment Failed")]
         PaymentFailed,
     }
 }
