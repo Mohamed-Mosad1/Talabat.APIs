@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.Extensions.Configuration;
 using Talabat.APIs.Dtos;
 using Talabat.Core.Entities.Product;
 

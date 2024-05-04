@@ -21,10 +21,10 @@ namespace Talabat.APIs.Controllers
             _mapper = mapper;
         }
 
-        [ProducesResponseType( typeof( Order ), StatusCodes.Status200OK )]
-        [ProducesResponseType( typeof( ApiResponse ), StatusCodes.Status400BadRequest )]
+        [ProducesResponseType(typeof(OrderToReturnDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [HttpPost] // POST: /api/Orders
-        public async Task<ActionResult<Order>> CreateOrder(OrderDto orderDto)
+        public async Task<ActionResult<OrderToReturnDto>> CreateOrder(OrderDto orderDto)
         {
             var shippingAddress = _mapper.Map<OrderAddressDto, OrderAddress>(orderDto.ShippingAddress);
 
@@ -32,31 +32,44 @@ namespace Talabat.APIs.Controllers
 
             if (order == null) return BadRequest(new ApiResponse(400));
 
-            return Ok(order);
+            return Ok(_mapper.Map<Order, OrderToReturnDto>(order));
         }
 
+
+
         [HttpGet] // GET: /api/Orders
-        public async Task<ActionResult<IReadOnlyList<Order>>> GetOrdersForUser(string buyerEmail)
+        public async Task<ActionResult<IReadOnlyList<OrderToReturnDto>>> GetOrdersForUser(string buyerEmail)
         {
             var orders = await _orderService.GetOrderForUserAsync(buyerEmail);
 
-            return Ok(orders);
+            return Ok(_mapper.Map<IReadOnlyList<Order>, IReadOnlyList<OrderToReturnDto>>(orders));
         }
 
 
-        [ProducesResponseType(typeof(Order), StatusCodes.Status200OK )]
-        [ProducesResponseType(typeof(Order), StatusCodes.Status404NotFound )]
+
+        [ProducesResponseType(typeof(OrderToReturnDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [HttpGet("{id}")] // GET: /api/Orders/{id}?buyerEmail=mohamed@gmail.com
-        public async Task<ActionResult<Order>> GetOrderByIdForUser(int id, string buyerEmail)
+        public async Task<ActionResult<OrderToReturnDto>> GetOrderByIdForUser(int id, string buyerEmail)
         {
-            var orders = await _orderService.GetOrderByIdForUserAsync(id, buyerEmail);
+            var order = await _orderService.GetOrderByIdForUserAsync(id, buyerEmail);
 
-            if (orders is null) return NotFound(new ApiResponse(404));
+            if (order is null) return NotFound(new ApiResponse(404));
 
-            return Ok(orders);
+            return Ok(_mapper.Map<OrderToReturnDto>(order));
         }
 
 
+
+        [HttpGet("deliveryMethods")] // GET: /api/Orders/deliveryMethods
+        public async Task<ActionResult<IReadOnlyList<DeliveryMethod>>> GetdeliveryMethodsForUser()
+        {
+            var deliveryMethods = await _orderService.GetDeliveryMethodsAsync();
+
+            if (deliveryMethods is null) return NotFound(new ApiResponse(404));
+
+            return Ok(deliveryMethods);
+        }
 
 
     }

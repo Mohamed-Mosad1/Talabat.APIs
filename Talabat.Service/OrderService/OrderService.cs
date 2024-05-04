@@ -21,6 +21,7 @@ namespace Talabat.Service.OrderService
             _unitOfWork = unitOfWork;
         }
 
+
         public async Task<Order?> CreateOrderAsync(string buyerEmail, string basketId, int deliveryMethodId, OrderAddress shippingAddress)
         {
             var basket = await _basketRepository.GetBasketByIdAsync(basketId);
@@ -51,6 +52,7 @@ namespace Talabat.Service.OrderService
             return order;
         }
 
+
         public async Task<IReadOnlyList<Order>> GetOrderForUserAsync(string buyerEmail)
         {
             var orderRepo = _unitOfWork.Repository<Order>();
@@ -61,6 +63,7 @@ namespace Talabat.Service.OrderService
 
             return orders;
         }
+
 
         public Task<Order?> GetOrderByIdForUserAsync(int orderId, string buyerEmail)
         {
@@ -73,9 +76,10 @@ namespace Talabat.Service.OrderService
             return order;
         }
 
-        public Task<IReadOnlyList<DeliveryMethod>> GetDeliveryMethodsAsync()
+
+        public async Task<IReadOnlyList<DeliveryMethod>> GetDeliveryMethodsAsync()
         {
-            throw new NotImplementedException();
+            return await _unitOfWork.Repository<DeliveryMethod>().GetAllAsync();
         }
 
     }
