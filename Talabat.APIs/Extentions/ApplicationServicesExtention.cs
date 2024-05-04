@@ -3,10 +3,10 @@ using Talabat.APIs.Helpers;
 using Talabat.Repository;
 using Talabat.APIs.Error;
 using Talabat.Core.Repositories.Contract;
-using Microsoft.AspNetCore.Builder;
-using Talabat.Core.Services.Contract;
 using Talabat.Repository.Basket;
-using Talabat.Service.AuthService;
+using Talabat.Core;
+using Talabat.Core.Services.Contract;
+using Talabat.Service.OrderService;
 
 namespace Talabat.APIs.Extentions
 {
@@ -14,9 +14,13 @@ namespace Talabat.APIs.Extentions
     {
         public static IServiceCollection addApplicationServices(this IServiceCollection services)
         {
+            services.AddScoped(typeof(IOrderService), typeof(OrderService));
+
+            services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
+
             services.AddScoped<IBasketRepository, BasketRepository>();
 
-            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            //services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
             services.AddAutoMapper(typeof(MappingProfile));
 

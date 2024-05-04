@@ -12,10 +12,7 @@ namespace Talabat.Core.Entities.Orders_Aggregate
         public decimal Price { get; set; }
         public int Quantity { get; set; }
 
-        public OrderItems()
-        {
-
-        }
+        private OrderItems() { }
 
         public OrderItems(ProductItemOrdered product, decimal price, int quantity)
         {

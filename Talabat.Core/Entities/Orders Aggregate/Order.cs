@@ -24,15 +24,11 @@ namespace Talabat.Core.Entities.Orders_Aggregate
         public string PaymentInstantId { get; set; } = string.Empty;
 
 
-        public Order()
-        {
+        private Order() { }
 
-        }
-
-        public Order(string buyerEmail, OrderStatus status, OrderAddress shippingAddress, DeliveryMethod deliveryMethod, ICollection<OrderItems> orderItems, decimal subTotal)
+        public Order(string buyerEmail, OrderAddress shippingAddress, DeliveryMethod deliveryMethod, ICollection<OrderItems> orderItems, decimal subTotal)
         {
             BuyerEmail = buyerEmail;
-            Status = status;
             ShippingAddress = shippingAddress;
             DeliveryMethod = deliveryMethod;
             OrderItems = orderItems;

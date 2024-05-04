@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using Talabat.Core.Entities;
+﻿using System.Text.Json;
+using Talabat.Core.Entities.Orders_Aggregate;
 using Talabat.Core.Entities.Product;
 
 namespace Talabat.Repository.Data

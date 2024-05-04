@@ -14,10 +14,7 @@ namespace Talabat.Core.Entities.Orders_Aggregate
         public string Street { get; set; }
         public string Country { get; set; }
 
-        public OrderAddress()
-        {
-
-        }
+        private OrderAddress() { }
 
         public OrderAddress(string firstName, string lastName, string city, string street, string country)
         {

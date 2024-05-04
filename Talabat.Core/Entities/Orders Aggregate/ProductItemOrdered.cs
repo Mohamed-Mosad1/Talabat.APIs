@@ -12,10 +12,7 @@ namespace Talabat.Core.Entities.Orders_Aggregate
         public string ProductName { get; set; }
         public string PictureUrl { get; set; }
 
-        public ProductItemOrdered()
-        {
-
-        }
+        private ProductItemOrdered() { }
 
         public ProductItemOrdered(int productId, string productName, string pictureUrl)
         {

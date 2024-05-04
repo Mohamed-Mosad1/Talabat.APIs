@@ -13,10 +13,7 @@ namespace Talabat.Core.Entities.Orders_Aggregate
         public decimal Cost { get; set; }
         public string DeliveryTime { get; set; }
 
-        public DeliveryMethod()
-        {
-
-        }
+        private DeliveryMethod() { }
 
         public DeliveryMethod(string shortName, string description, decimal cost, string deliveryTime)
         {
