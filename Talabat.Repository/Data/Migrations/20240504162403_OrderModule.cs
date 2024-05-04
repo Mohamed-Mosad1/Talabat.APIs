@@ -65,7 +65,6 @@ namespace Talabat.Repository.Data.Migrations
                     Product_ProductId = table.Column<int>(type: "int", nullable: false),
                     Product_ProductName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Product_PictureUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Product_Id = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(12,2)", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     OrderId = table.Column<int>(type: "int", nullable: true)

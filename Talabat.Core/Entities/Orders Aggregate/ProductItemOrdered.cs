@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Talabat.Core.Entities.Orders_Aggregate
 {
-    public class ProductItemOrdered : BaseEntity
+    public class ProductItemOrdered 
     {
         public int ProductId { get; set; }
         public string ProductName { get; set; }

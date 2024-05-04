@@ -12,7 +12,7 @@ using Talabat.Repository.Data;
 namespace Talabat.Repository.Data.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20240503170616_OrderModule")]
+    [Migration("20240504162403_OrderModule")]
     partial class OrderModule
     {
         /// <inheritdoc />
@@ -25,7 +25,7 @@ namespace Talabat.Repository.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Talabat.Core.Entities.Orders.DeliveryMethod", b =>
+            modelBuilder.Entity("Talabat.Core.Entities.Orders_Aggregate.DeliveryMethod", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -53,7 +53,7 @@ namespace Talabat.Repository.Data.Migrations
                     b.ToTable("DeliveryMethods");
                 });
 
-            modelBuilder.Entity("Talabat.Core.Entities.Orders.Order", b =>
+            modelBuilder.Entity("Talabat.Core.Entities.Orders_Aggregate.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -89,7 +89,7 @@ namespace Talabat.Repository.Data.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("Talabat.Core.Entities.Orders.OrderItems", b =>
+            modelBuilder.Entity("Talabat.Core.Entities.Orders_Aggregate.OrderItems", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -186,14 +186,14 @@ namespace Talabat.Repository.Data.Migrations
                     b.ToTable("ProductCategories");
                 });
 
-            modelBuilder.Entity("Talabat.Core.Entities.Orders.Order", b =>
+            modelBuilder.Entity("Talabat.Core.Entities.Orders_Aggregate.Order", b =>
                 {
-                    b.HasOne("Talabat.Core.Entities.Orders.DeliveryMethod", "DeliveryMethod")
+                    b.HasOne("Talabat.Core.Entities.Orders_Aggregate.DeliveryMethod", "DeliveryMethod")
                         .WithMany()
                         .HasForeignKey("DeliveryMethodId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.OwnsOne("Talabat.Core.Entities.Orders.OrderAddress", "ShippingAddress", b1 =>
+                    b.OwnsOne("Talabat.Core.Entities.Orders_Aggregate.OrderAddress", "ShippingAddress", b1 =>
                         {
                             b1.Property<int>("OrderId")
                                 .HasColumnType("int");
@@ -232,19 +232,16 @@ namespace Talabat.Repository.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Talabat.Core.Entities.Orders.OrderItems", b =>
+            modelBuilder.Entity("Talabat.Core.Entities.Orders_Aggregate.OrderItems", b =>
                 {
-                    b.HasOne("Talabat.Core.Entities.Orders.Order", null)
+                    b.HasOne("Talabat.Core.Entities.Orders_Aggregate.Order", null)
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.OwnsOne("Talabat.Core.Entities.Orders.ProductItemOrdered", "Product", b1 =>
+                    b.OwnsOne("Talabat.Core.Entities.Orders_Aggregate.ProductItemOrdered", "Product", b1 =>
                         {
                             b1.Property<int>("OrderItemsId")
-                                .HasColumnType("int");
-
-                            b1.Property<int>("Id")
                                 .HasColumnType("int");
 
                             b1.Property<string>("PictureUrl")
@@ -289,7 +286,7 @@ namespace Talabat.Repository.Data.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("Talabat.Core.Entities.Orders.Order", b =>
+            modelBuilder.Entity("Talabat.Core.Entities.Orders_Aggregate.Order", b =>
                 {
                     b.Navigation("OrderItems");
                 });
