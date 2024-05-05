@@ -1,17 +1,12 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using StackExchange.Redis;
-using System.Text;
 using Talabat.APIs.Extentions;
 using Talabat.APIs.Middlewares;
 using Talabat.Core.Entities.Identity;
-using Talabat.Core.Services.Contract;
 using Talabat.Repository.Data;
 using Talabat.Repository.Identity;
-using Talabat.Service.AuthService;
 
 namespace Talabat.APIs
 {
@@ -43,8 +38,9 @@ namespace Talabat.APIs
 
             webApplicationBuilder.Services.AddSingleton<IConnectionMultiplexer>((serviceProvider) =>
             {
-                var connection = webApplicationBuilder.Configuration.GetConnectionString("Redis");
+                var connection = webApplicationBuilder.Configuration.GetConnectionString("Redis") ?? "Error While Connection";
                 return ConnectionMultiplexer.Connect(connection);
+
             });
 
             webApplicationBuilder.Services.AddIdentity<AppUser, IdentityRole>(options =>
@@ -55,13 +51,15 @@ namespace Talabat.APIs
             }).AddEntityFrameworkStores<AppIdentityDbContext>();
 
             webApplicationBuilder.Services.AddIdentityServices(webApplicationBuilder.Configuration);
-            
+
 
             #endregion
 
 
             var app = webApplicationBuilder.Build();
 
+
+            #region Apple All Pending Migrations and Data Seeding
 
             using var scope = app.Services.CreateScope();
 
@@ -89,6 +87,8 @@ namespace Talabat.APIs
             {
                 logger.LogError(ex, "An Error has been occured during apply the migration");
             }
+
+            #endregion
 
             // Configure the HTTP request pipeline.
             #region Configure Kestrel Middlewares

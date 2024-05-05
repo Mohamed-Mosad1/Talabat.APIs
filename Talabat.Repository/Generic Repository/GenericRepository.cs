@@ -35,7 +35,7 @@ namespace Talabat.Repository
 
             return await _dbContext.Set<T>().FindAsync(id);
         }
-        
+
         public async Task<IReadOnlyList<T>> GetAllWithSpecAsync(ISpecification<T> spec)
         {
             return await ApplySpecifications(spec).ToListAsync();
@@ -54,6 +54,21 @@ namespace Talabat.Repository
         public async Task<int> GetCountAsync(ISpecification<T> spec)
         {
             return await ApplySpecifications(spec).CountAsync();
+        }
+
+        public async void AddAsync(T entity)
+        {
+            await _dbContext.Set<T>().AddAsync(entity);
+        }
+
+        public void Update(T entity)
+        {
+            _dbContext.Set<T>().Update(entity);
+        }
+
+        public void Delete(T entity)
+        {
+            _dbContext.Set<T>().Remove(entity);
         }
     }
 }
