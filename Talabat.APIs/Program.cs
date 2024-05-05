@@ -34,7 +34,10 @@ namespace Talabat.APIs
 
             webApplicationBuilder.Services.addApplicationServices();
 
-            webApplicationBuilder.Services.AddDbContext<StoreContext>(options => options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("DefaultConnection")));
+            webApplicationBuilder.Services.AddDbContext<StoreContext>(options =>
+            {
+                options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("DefaultConnection"));
+            });
 
             webApplicationBuilder.Services.AddDbContext<AppIdentityDbContext>(options =>
             {
