@@ -7,7 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Talabat.APIs\Talabat.APIs.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\Users\Partial\" />
   </ItemGroup>
 
 </Project>
