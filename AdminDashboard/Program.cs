@@ -26,12 +26,8 @@ namespace AdminDashboard
                 options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("IdentityConnection"));
             });
 
-            webApplicationBuilder.Services.AddIdentity<AppUser, IdentityRole>(options =>
-            {
-                ///options.Password.RequireDigit = true;
-                ///options.Password.RequiredUniqueChars = 2;
-                ///options.Password.RequireNonAlphanumeric = true;
-            }).AddEntityFrameworkStores<AppIdentityDbContext>();
+            webApplicationBuilder.Services.AddIdentity<AppUser, IdentityRole>()
+                .AddEntityFrameworkStores<AppIdentityDbContext>();
 
 
 
