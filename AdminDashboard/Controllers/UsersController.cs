@@ -18,40 +18,20 @@ namespace AdminDashboard.Controllers
             _roleManager = roleManager;
         }
 
-        ///public async Task<IActionResult> Index()
-        ///{
-        ///    var users = await _userManager.Users.Select(U => new UserViewModel()
-        ///    {
-        ///        Id = U.Id,
-        ///        UserName = U.UserName ?? string.Empty,
-        ///        DisplayName = U.DisplayName,
-        ///        Email = U.Email ?? string.Empty,
-        ///        PhoneNumber = U.PhoneNumber ?? string.Empty,
-        ///        Roles = _userManager.GetRolesAsync(U).Result
-        ///    }).ToListAsync();
-        ///
-        ///    return View(users);
-        ///}
-
         public async Task<IActionResult> Index()
         {
             var users = await _userManager.Users.ToListAsync();
-            var viewModelList = new List<UserViewModel>();
-            foreach (var user in users)
+            var mappedUsers = users.Select(U => new UserViewModel()
             {
-                var roles = await _userManager.GetRolesAsync(user);
-                var viewModel = new UserViewModel
-                {
-                    Id = user.Id,
-                    UserName = user.UserName ?? string.Empty,
-                    DisplayName = user.DisplayName,
-                    Email = user.Email ?? string.Empty,
-                    PhoneNumber = user.PhoneNumber ?? string.Empty,
-                    Roles = roles
-                };
-                viewModelList.Add(viewModel);
-            }
-            return View(viewModelList);
+                Id = U.Id,
+                UserName = U.UserName ?? string.Empty,
+                DisplayName = U.DisplayName,
+                Email = U.Email ?? string.Empty,
+                PhoneNumber = U.PhoneNumber ?? string.Empty,
+                Roles = _userManager.GetRolesAsync(U).Result
+            }).ToList();
+
+            return View(mappedUsers);
         }
 
         public async Task<IActionResult> Edit(string id)
