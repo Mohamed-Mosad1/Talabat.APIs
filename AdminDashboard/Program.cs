@@ -1,7 +1,10 @@
+using AdminDashboard.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Talabat.Core;
 using Talabat.Core.Entities.Identity;
+using Talabat.Repository;
 using Talabat.Repository.Data;
 using Talabat.Repository.Identity;
 
@@ -29,6 +32,8 @@ namespace AdminDashboard
             webApplicationBuilder.Services.AddIdentity<AppUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppIdentityDbContext>();
 
+            webApplicationBuilder.Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
+            webApplicationBuilder.Services.AddAutoMapper(typeof(MappingProfile));
 
 
             var app = webApplicationBuilder.Build();

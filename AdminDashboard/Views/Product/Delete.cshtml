@@ -1,0 +1,31 @@
+﻿@model ProductViewModel
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Delete</h1>
+
+
+<div class="container">
+    <form method="post" asp-action="Delete">
+
+        <input asp-for="Id" class="form-control" hidden />
+
+        <h2 class="mt-3">Are you sure to delete @Model.Name </h2>
+        <div class="form-group">
+            <label asp-for="Name" class="col-form-label"></label>
+            <input asp-for="Name" class="form-control" disabled/>
+        </div>
+        <div class="form-group">
+            <label asp-for="Description" class="col-form-label"></label>
+            <input asp-for="Description" class="form-control" disabled />
+        </div>
+        <div class="form-group">
+            <label asp-for="Price" class="col-form-label"></label>
+            <input asp-for="Price" class="form-control" type="number" disabled/>
+        </div>
+        <input type="submit" class="btn btn-primary my-3" value="Delete" />
+        <a asp-action="Index" class="btn btn-light">Back To List</a>
+    </form>
+</div>
