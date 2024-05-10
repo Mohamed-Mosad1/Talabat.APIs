@@ -18,10 +18,10 @@ namespace Talabat.APIs.Error
             {
                 400 => "Bad Request",
                 401 => "Unauthorized",
-                404 => "Resourse was not found",
-                500 => "Errors are the path to the dark side. Errors lead to anger. Anger leads to hate. Hate lead to career change",
-                _ => null
-            };
+                404 => "Not Found",
+                500 => "Internal Server Error",
+                _ => "Unknown Status Code"
+			};
         }
     }
 }

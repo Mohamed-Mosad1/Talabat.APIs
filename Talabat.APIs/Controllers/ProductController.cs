@@ -12,9 +12,6 @@ namespace Talabat.APIs.Controllers
 {
     public class ProductsController : BaseApiController
     {
-        //private readonly IGenericRepository<Product> _productsRepository;
-        //private readonly IGenericRepository<ProductBrand> _productBrandsRepository;
-        //private readonly IGenericRepository<ProductCategory> _productCategoriesRepository;
         private readonly IProductService _productService;
         private readonly IMapper _mapper;
 

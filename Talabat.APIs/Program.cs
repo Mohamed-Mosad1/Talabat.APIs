@@ -10,137 +10,116 @@ using Talabat.Repository.Identity;
 
 namespace Talabat.APIs
 {
-    public class Program
-    {
-        public static async Task Main(string[] args)
-        {
+	public class Program
+	{
+		public static async Task Main(string[] args)
+		{
 
-            var webApplicationBuilder = WebApplication.CreateBuilder(args);
+			var webApplicationBuilder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-            #region Configure Services
+			// Add services to the container.
+			#region Configure Services
 
-            webApplicationBuilder.Services.AddControllers().AddNewtonsoftJson(options =>
-            {
-                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-            });
+			webApplicationBuilder.Services.AddControllers().AddNewtonsoftJson(options =>
+			{
+				options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+			});
 
-            webApplicationBuilder.Services.AddSwaggerServices();
+			webApplicationBuilder.Services.AddSwaggerServices();
 
-            webApplicationBuilder.Services.addApplicationServices();
+			webApplicationBuilder.Services.addApplicationServices();
 
-            webApplicationBuilder.Services.AddDbContext<StoreContext>(options =>
-            {
-                options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("DefaultConnection"));
-            });
+			webApplicationBuilder.Services.AddDbContext<StoreContext>(options =>
+			{
+				options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("DefaultConnection"));
+			});
 
-            webApplicationBuilder.Services.AddDbContext<AppIdentityDbContext>(options =>
-            {
-                options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("IdentityConnection"));
-            });
+			webApplicationBuilder.Services.AddDbContext<AppIdentityDbContext>(options =>
+			{
+				options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("IdentityConnection"));
+			});
 
-            webApplicationBuilder.Services.AddSingleton<IConnectionMultiplexer>((serviceProvider) =>
-            {
-                var connection = webApplicationBuilder.Configuration.GetConnectionString("Redis") ?? "Error While Connection";
-                return ConnectionMultiplexer.Connect(connection);
+			webApplicationBuilder.Services.AddSingleton<IConnectionMultiplexer>((serviceProvider) =>
+			{
+				var connection = webApplicationBuilder.Configuration.GetConnectionString("Redis") ?? "Error While Connection";
+				return ConnectionMultiplexer.Connect(connection);
 
-            });
+			});
 
-            webApplicationBuilder.Services.AddIdentity<AppUser, IdentityRole>(options =>
-            {
-                ///options.Password.RequireDigit = true;
-                ///options.Password.RequiredUniqueChars = 2;
-                ///options.Password.RequireNonAlphanumeric = true;
-            }).AddEntityFrameworkStores<AppIdentityDbContext>();
+			webApplicationBuilder.Services.AddIdentity<AppUser, IdentityRole>(options =>
+			{
+				///options.Password.RequireDigit = true;
+				///options.Password.RequiredUniqueChars = 2;
+				///options.Password.RequireNonAlphanumeric = true;
+			}).AddEntityFrameworkStores<AppIdentityDbContext>();
 
-            webApplicationBuilder.Services.AddIdentityServices(webApplicationBuilder.Configuration);
-
-
-            #endregion
+			webApplicationBuilder.Services.AddIdentityServices(webApplicationBuilder.Configuration);
 
 
-            var app = webApplicationBuilder.Build();
+			#endregion
 
 
-            #region Apple All Pending Migrations and Data Seeding
+			var app = webApplicationBuilder.Build();
 
-            using var scope = app.Services.CreateScope();
 
-            var services = scope.ServiceProvider;
+			#region Apple All Pending Migrations and Data Seeding
 
-            var _dbContext = services.GetRequiredService<StoreContext>();
-            var _identityDbContext = services.GetRequiredService<AppIdentityDbContext>();
+			using (var scope = app.Services.CreateScope())
+			{
+				var services = scope.ServiceProvider;
 
-            var loggerFactory = services.GetRequiredService<ILoggerFactory>();
-            var logger = loggerFactory.CreateLogger<Program>();
+				var _dbContext = services.GetRequiredService<StoreContext>();
+				var _identityDbContext = services.GetRequiredService<AppIdentityDbContext>();
+				var _userManager = services.GetRequiredService<UserManager<AppUser>>();
 
-            try
-            {
-                await _dbContext.Database.MigrateAsync(); // Update Database
+				var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+				var logger = loggerFactory.CreateLogger<Program>();
 
-                await StoreContextSeed.SeedAsync(_dbContext); // Data Seeding
+				try
+				{
+					await _dbContext.Database.MigrateAsync(); // Update StoreContext Database
+					await StoreContextSeed.SeedAsync(_dbContext); // Seed StoreContext Data
 
-                await _identityDbContext.Database.MigrateAsync();
+					await _identityDbContext.Database.MigrateAsync(); // Update AppIdentityDbContext Database
+					await AppIdentityDbContextSeed.SeedUserAsync(_userManager); // Seed AppIdentityDbContext Data
+				}
+				catch (DbUpdateException ex)
+				{
+					logger.LogError(ex, "An error occurred while updating the database.");
+				}
+				catch (Exception ex)
+				{
+					logger.LogError(ex, "An error occurred during data seeding or migration.");
+				}
+			}
 
-                var _userManger = services.GetRequiredService<UserManager<AppUser>>();
+			#endregion
 
-                await AppIdentityDbContextSeed.SeedUserAsync(_userManger);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "An Error has been occured during apply the migration");
-            }
+			// Configure the HTTP request pipeline.
+			#region Configure Kestrel Middlewares
 
-            #endregion
+			app.UseMiddleware<ExceptionMiddleware>();
 
-            // Configure the HTTP request pipeline.
-            #region Configure Kestrel Middlewares
+			if (app.Environment.IsDevelopment())
+			{
+				app.UseSwaggerMiddleware();
+			}
 
-            app.UseMiddleware<ExceptionMiddleware>();
+			app.UseStatusCodePagesWithReExecute("/errors/{0}");
 
-            ///app.Use(async (httpContext, _next) =>
-            ///{
-            ///    try
-            ///    {
-            ///        // Take An Action With the request
-            ///        await _next.Invoke(httpContext);
-            ///        // Take An Action With the response
-            ///    }
-            ///    catch (Exception ex)
-            ///    {
-            ///        logger.LogError(ex.Message); // Development
-            ///        httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            ///        httpContext.Response.ContentType = "application/json";
-            ///        var response = app.Environment.IsDevelopment() ?
-            ///            new ApiExceptionResponse((int)HttpStatusCode.InternalServerError, ex.Message, ex.StackTrace.ToString())
-            ///            :
-            ///            new ApiExceptionResponse((int)HttpStatusCode.InternalServerError);
-            ///        var options = new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-            ///        var json = JsonSerializer.Serialize(response, options);
-            ///        await httpContext.Response.WriteAsync(json);
-            ///    }
-            ///});
+			app.UseHttpsRedirection();
 
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwaggerMiddleware();
-            }
+			app.UseStaticFiles();
 
-            app.UseStatusCodePagesWithReExecute("/errors/{0}");
+			app.UseAuthentication();
 
-            app.UseHttpsRedirection();
+			app.UseAuthorization();
 
-            app.UseStaticFiles();
+			app.MapControllers();
 
-            app.UseAuthentication();
+			#endregion
 
-            app.UseAuthorization();
-
-            app.MapControllers();
-
-            #endregion
-
-            app.Run();
-        }
-    }
+			app.Run();
+		}
+	}
 }
