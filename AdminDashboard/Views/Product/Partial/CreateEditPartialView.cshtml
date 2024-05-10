@@ -2,8 +2,8 @@
 
 @inject IUnitOfWork unitOfWork
 @{
-    var Brands = new SelectList(unitOfWork.Repository<ProductBrand>().GetAllAsync().Result, "Id", "Name");
-    var Categories = new SelectList(unitOfWork.Repository<ProductCategory>().GetAllAsync().Result, "Id", "Name");
+    var Brands = new SelectList(await unitOfWork.Repository<ProductBrand>().GetAllAsync(), "Id", "Name");
+    var Categories = new SelectList(await unitOfWork.Repository<ProductCategory>().GetAllAsync(), "Id", "Name");
 }
 <div class="form-group">
     <label asp-for="Image" class="col-form-label "></label>

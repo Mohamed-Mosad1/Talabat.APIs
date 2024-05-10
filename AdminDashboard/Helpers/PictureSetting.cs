@@ -20,7 +20,7 @@
 
 		public static void DeleteFile(string folderName, string fileName)
 		{
-			var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images", folderName);
+			var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images", folderName, fileName);
 			if (File.Exists(filePath))
 			{
 				File.Delete(filePath);

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Talabat.Core.Entities;
+using Talabat.Core.Entities.Product;
 using Talabat.Core.Repositories.Contract;
 using Talabat.Core.Specifications;
 using Talabat.Repository.Data;
@@ -23,7 +24,7 @@ namespace Talabat.Repository
         public async Task<IReadOnlyList<T>> GetAllAsync()
         {
             //if (typeof(T) == typeof(Product))
-            //    return (IEnumerable<T>)await _dbContext.Set<Product>().Include(P => P.Brand).Include(C => C.Category).ToListAsync();
+            //    return (IReadOnlyList<T>)await _dbContext.Set<Product>().Include(P => P.Brand).Include(C => C.Category).ToListAsync();
 
             return await _dbContext.Set<T>().ToListAsync();
         }
@@ -53,14 +54,15 @@ namespace Talabat.Repository
             return SpecificationsEvaluator<T>.GetQuery(_dbContext.Set<T>(), spec);
         }
 
-
-
         public async Task<int> GetCountAsync(ISpecification<T> spec)
         {
             return await ApplySpecifications(spec).CountAsync();
         }
 
-        public async void AddAsync(T entity)
+
+
+
+        public async Task AddAsync(T entity)
         {
             await _dbContext.Set<T>().AddAsync(entity);
         }

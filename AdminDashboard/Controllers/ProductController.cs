@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Talabat.APIs.Error;
 using Talabat.Core;
 using Talabat.Core.Entities.Product;
+using Talabat.Core.Specifications.ProductSpecs;
 
 namespace AdminDashboard.Controllers
 {
@@ -22,9 +23,11 @@ namespace AdminDashboard.Controllers
         public async Task<IActionResult> Index()
         {
             // GET All Products
-            var products = await _unitOfWork.Repository<Product>().GetAllAsync();
+            var spec = new ProductWithBrandAndCategorySpecifications();
 
-            var mappedProduct = _mapper.Map<IReadOnlyList<ProductViewModel>>(products);
+            var products = await _unitOfWork.Repository<Product>().GetAllWithSpecAsync(spec);
+
+            var mappedProduct = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductViewModel>>(products);
 
             return View(mappedProduct);
         }
@@ -48,11 +51,11 @@ namespace AdminDashboard.Controllers
                     viewModel.PictureUrl = "images/products/blueberry-cheesecake.png";
                 }
 
-                var mappedProduct = _mapper.Map<ProductViewModel, Product>(viewModel);
-                //await _unitOfWork.Repository<Product>().addAsync(mappedProduct);
+                var product = _mapper.Map<ProductViewModel, Product>(viewModel);
+                await _unitOfWork.Repository<Product>().AddAsync(product);
                 await _unitOfWork.CompleteAsync();
 
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
             return View(viewModel);
         }
@@ -60,6 +63,9 @@ namespace AdminDashboard.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var product = await _unitOfWork.Repository<Product>().GetByIdAsync(id);
+
+            if (product == null)
+                return NotFound(new ApiResponse(404, "Product not found."));
 
             var mappedProduct = _mapper.Map<Product, ProductViewModel>(product);
 
@@ -72,7 +78,7 @@ namespace AdminDashboard.Controllers
             if (id != viewModel.Id)
                 return NotFound(new ApiResponse(404));
 
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 if (viewModel.Image is not null)
                 {
@@ -87,9 +93,9 @@ namespace AdminDashboard.Controllers
                         viewModel.PictureUrl = PictureSetting.UploadFile(viewModel.Image, "products");
                     }
 
-                    var mappedProduct = _mapper.Map<ProductViewModel, Product>(viewModel);
+                    var product = _mapper.Map<ProductViewModel, Product>(viewModel);
 
-                    _unitOfWork.Repository<Product>().Update(mappedProduct);
+                    _unitOfWork.Repository<Product>().Update(product);
                     var result = await _unitOfWork.CompleteAsync();
                     if (result > 0)
                         return RedirectToAction(nameof(Index));
@@ -102,6 +108,9 @@ namespace AdminDashboard.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var product = await _unitOfWork.Repository<Product>().GetByIdAsync(id);
+
+            if (product == null)
+                return NotFound(new ApiResponse(404, "Product not found."));
 
             var mappedProduct = _mapper.Map<Product, ProductViewModel>(product);
 
@@ -118,8 +127,11 @@ namespace AdminDashboard.Controllers
             {
                 var product = await _unitOfWork.Repository<Product>().GetByIdAsync(id);
 
+                if (product == null)
+                    return NotFound(new ApiResponse(404, "Product not found."));
+
                 if (product.PictureUrl != null)
-                    PictureSetting.DeleteFile(viewModel.PictureUrl, "products");
+                    PictureSetting.DeleteFile(product.PictureUrl, "products");
 
                 _unitOfWork.Repository<Product>().Delete(product);
 
