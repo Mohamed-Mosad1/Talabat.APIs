@@ -23,7 +23,7 @@ namespace Talabat.APIs.Controllers
             _mapper = mapper;
         }
 
-        [Authorize] // (AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)
+        //[Authorize] // (AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)
         [HttpGet] // /api/Products
         public async Task<ActionResult<Pagination<ProductToReturnDto>>> GetProducts([FromQuery] ProductSpecParams specParams)
         {
@@ -40,7 +40,7 @@ namespace Talabat.APIs.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(ProductToReturnDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<IEnumerable<ProductToReturnDto>>> GetProduct(int id)
+        public async Task<ActionResult<ProductToReturnDto>> GetProduct(int id)
         {
             var product = await _productService.GetProductByIdAsync(id);
 

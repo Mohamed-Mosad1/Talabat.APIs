@@ -12,9 +12,9 @@ namespace Talabat.APIs.Helpers
         public MappingProfile()
         {
             CreateMap<Product, ProductToReturnDto>()
-                .ForMember(P => P.Brand, option => option.MapFrom(S => S.Brand.Name))
-                .ForMember(P => P.Category, option => option.MapFrom(S => S.Category.Name))
-                .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<ProductPictureUrlResolver>());
+                .ForMember(dest => dest.Brand, option => option.MapFrom(src => src.Brand.Name))
+                .ForMember(dest => dest.Category, option => option.MapFrom(src => src.Category.Name))
+                .ForMember(dest => dest.PictureUrl, option => option.MapFrom<ProductPictureUrlResolver>());
 
             CreateMap<CustomerBasketDto, CustomerBasket>();
             CreateMap<BasketItemDto, BasketItem>();
@@ -24,15 +24,15 @@ namespace Talabat.APIs.Helpers
             CreateMap<OrderAddressDto, OrderAddress>();
 
             CreateMap<Order, OrderToReturnDto>()
-                .ForMember(dest => dest.DeliveryMethod, opt => opt.MapFrom(src => src.DeliveryMethod != null ? src.DeliveryMethod.ShortName : string.Empty))
-                .ForMember(dest => dest.DeliveryMethodCoast, opt => opt.MapFrom(src => src.DeliveryMethod != null ? src.DeliveryMethod.Cost : 0));
+                .ForMember(dest => dest.DeliveryMethod, option => option.MapFrom(src => src.DeliveryMethod != null ? src.DeliveryMethod.ShortName : string.Empty))
+                .ForMember(dest => dest.DeliveryMethodCoast, option => option.MapFrom(src => src.DeliveryMethod != null ? src.DeliveryMethod.Cost : 0));
 
 
             CreateMap<OrderItems, OrderItemsDto>()
-                .ForMember(D => D.ProductId, option => option.MapFrom(S => S.Product.ProductId))
-                .ForMember(D => D.ProductName, option => option.MapFrom(S => S.Product.ProductName))
-                .ForMember(D => D.PictureUrl, option => option.MapFrom(S => S.Product.PictureUrl))
-                .ForMember(D => D.PictureUrl, option => option.MapFrom<OrderItemPictureUrlResolver>());
+                .ForMember(dest => dest.ProductId, option => option.MapFrom(src => src.Product.ProductId))
+                .ForMember(dest => dest.ProductName, option => option.MapFrom(src => src.Product.ProductName))
+                .ForMember(dest => dest.PictureUrl, option => option.MapFrom(src => src.Product.PictureUrl))
+                .ForMember(dest => dest.PictureUrl, option => option.MapFrom<OrderItemPictureUrlResolver>());
         }
     }
 }

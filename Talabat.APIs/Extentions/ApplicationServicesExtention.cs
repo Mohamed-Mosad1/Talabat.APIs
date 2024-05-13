@@ -13,7 +13,7 @@ namespace Talabat.APIs.Extentions
 {
 	public static class ApplicationServicesExtention
 	{
-		public static IServiceCollection addApplicationServices(this IServiceCollection services)
+		public static IServiceCollection AddApplicationServices(this IServiceCollection services)
 		{
 			services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
 

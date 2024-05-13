@@ -27,7 +27,7 @@ namespace Talabat.APIs
 
 			webApplicationBuilder.Services.AddSwaggerServices();
 
-			webApplicationBuilder.Services.addApplicationServices();
+			webApplicationBuilder.Services.AddApplicationServices();
 
 			webApplicationBuilder.Services.AddDbContext<StoreContext>(options =>
 			{
@@ -41,7 +41,7 @@ namespace Talabat.APIs
 
 			webApplicationBuilder.Services.AddSingleton<IConnectionMultiplexer>((serviceProvider) =>
 			{
-				var connection = webApplicationBuilder.Configuration.GetConnectionString("Redis") ?? "Error While Connection";
+				var connection = webApplicationBuilder.Configuration.GetConnectionString("Redis") ?? "Error While Connecting to Redis Server";
 				return ConnectionMultiplexer.Connect(connection);
 
 			});

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Talabat.APIs.Dtos;
 using Talabat.APIs.Error;
@@ -24,6 +25,7 @@ namespace Talabat.APIs.Controllers
         [ProducesResponseType(typeof(OrderToReturnDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [HttpPost] // POST: /api/Orders
+        [Authorize]
         public async Task<ActionResult<OrderToReturnDto>> CreateOrder(OrderDto orderDto)
         {
             var shippingAddress = _mapper.Map<OrderAddressDto, OrderAddress>(orderDto.ShippingAddress);
@@ -38,6 +40,7 @@ namespace Talabat.APIs.Controllers
 
 
         [HttpGet] // GET: /api/Orders
+        [Authorize]
         public async Task<ActionResult<IReadOnlyList<OrderToReturnDto>>> GetOrdersForUser(string buyerEmail)
         {
             var orders = await _orderService.GetOrderForUserAsync(buyerEmail);
@@ -50,6 +53,7 @@ namespace Talabat.APIs.Controllers
         [ProducesResponseType(typeof(OrderToReturnDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [HttpGet("{id}")] // GET: /api/Orders/{id}?buyerEmail=mohamed@gmail.com
+        [Authorize]
         public async Task<ActionResult<OrderToReturnDto>> GetOrderByIdForUser(int id, string buyerEmail)
         {
             var order = await _orderService.GetOrderByIdForUserAsync(id, buyerEmail);

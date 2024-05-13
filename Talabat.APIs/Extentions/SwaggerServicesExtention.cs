@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
-
-namespace Talabat.APIs.Extentions
+﻿namespace Talabat.APIs.Extentions
 {
     public static class SwaggerServicesExtention
     {
