@@ -24,6 +24,7 @@ namespace Talabat.APIs.Controllers
         }
 
         //[Authorize] // (AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)
+        [CachedAttribute(300)]
         [HttpGet] // /api/Products
         public async Task<ActionResult<Pagination<ProductToReturnDto>>> GetProducts([FromQuery] ProductSpecParams specParams)
         {

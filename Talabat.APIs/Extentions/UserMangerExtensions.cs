@@ -11,7 +11,7 @@ namespace Talabat.APIs.Extentions
         {
             var email = User.FindFirstValue(ClaimTypes.Email);
 
-            var user = await userManager.Users.Include(U=>U.Address).FirstOrDefaultAsync(U=>U.NormalizedEmail == email.ToUpper());
+            var user = await userManager.Users.Include(U => U.Address).FirstOrDefaultAsync(U => U.NormalizedEmail == email.ToUpper());
 
             return user;
         }

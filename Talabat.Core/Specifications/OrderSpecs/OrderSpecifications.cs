@@ -18,8 +18,8 @@ namespace Talabat.Core.Specifications.OrderSpecs
         {
             Includes.Add(O => O.DeliveryMethod);
             Includes.Add(O => O.OrderItems);
-
         }
+        
 
     }
 }

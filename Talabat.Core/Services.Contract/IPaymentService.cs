@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Talabat.Core.Entities.Basket;
+using Talabat.Core.Entities.Orders_Aggregate;
 
 namespace Talabat.Core.Services.Contract
 {
@@ -12,5 +13,7 @@ namespace Talabat.Core.Services.Contract
         // Method To Create or Update Payment Intent
 
         Task<CustomerBasket?> CreateOrUpdatePaymentIntent(string basketId);
+
+        Task<Order> UpdatePaymentIntentToSucceedOrFailed(string paymentIntentId, bool flag);
     }
 }

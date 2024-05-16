@@ -11,14 +11,17 @@ namespace Talabat.Service.OrderService
     {
         private readonly IBasketRepository _basketRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IPaymentService _paymentService;
 
         public OrderService(
             IBasketRepository basketRepository,
-            IUnitOfWork unitOfWork
+            IUnitOfWork unitOfWork,
+            IPaymentService paymentService
             )
         {
             _basketRepository = basketRepository;
             _unitOfWork = unitOfWork;
+            _paymentService = paymentService;
         }
 
 
@@ -43,9 +46,18 @@ namespace Talabat.Service.OrderService
 
             var deliveryMethod = await _unitOfWork.Repository<DeliveryMethod>().GetByIdAsync(deliveryMethodId);
 
-            var order = new Order(buyerEmail, shippingAddress, deliveryMethod, orderItems, subTotal);
+            var orderSpec = new OrderWithPaymentIntentSpec(basket.PaymentIntentId);
+            var existOrder = await _unitOfWork.Repository<Order>().GetWithSpecAsync(orderSpec);
+            if (existOrder != null)
+            {
+                _unitOfWork.Repository<Order>().Delete(existOrder);
+                await _paymentService.CreateOrUpdatePaymentIntent(basketId);
+            }
 
-            _unitOfWork.Repository<Order>().AddAsync(order);
+            var order = new Order(buyerEmail, shippingAddress, deliveryMethod, orderItems, subTotal, basket.PaymentIntentId);
+
+            await _unitOfWork.Repository<Order>().AddAsync(order);
+
             var result = await _unitOfWork.CompleteAsync();
             if (result <= 0) return null;
 

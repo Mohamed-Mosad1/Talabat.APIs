@@ -54,7 +54,7 @@ namespace Talabat.APIs.Controllers
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [HttpGet("{id}")] // GET: /api/Orders/{id}?buyerEmail=mohamed@gmail.com
         [Authorize]
-        public async Task<ActionResult<OrderToReturnDto>> GetOrderByIdForUser(int id, string buyerEmail)
+        public async Task<ActionResult<OrderToReturnDto>> GetOrderByIdForUser(int id,string buyerEmail)
         {
             var order = await _orderService.GetOrderByIdForUserAsync(id, buyerEmail);
 

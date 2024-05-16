@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Talabat.APIs.Dtos;
 using Talabat.APIs.Error;
@@ -98,26 +96,40 @@ namespace Talabat.APIs.Controllers
         {
             var user = await _userManager.FindUserWithAddressAsync(User);
 
-            return Ok(_mapper.Map<UserAddressDto>(user.Address));
+            if (user == null || user.Address == null)
+            {
+                return NotFound(new ApiResponse(404, "user address not found."));
+            }
+
+            var userAddressDto = _mapper.Map<UserAddressDto>(user.Address);
+            return Ok(userAddressDto);
         }
 
         [Authorize]
         [HttpPut("userAddress")] // PUT : /api/account/userAddress
-        public async Task<ActionResult<UserAddress>> UpdateUserAddress(UserAddressDto userAddress)
+        public async Task<ActionResult<UserAddressDto>> UpdateUserAddress(UserAddressDto userAddress)
         {
-            var updateAddress = _mapper.Map<UserAddress>(userAddress);
-
             var user = await _userManager.FindUserWithAddressAsync(User);
 
-            updateAddress.Id = user.Address.Id;
+            if (user == null || user.Address == null)
+            {
+                return NotFound(new ApiResponse(404, "user address not found."));
+            }
 
+            var updateAddress = _mapper.Map<UserAddressDto, UserAddress>(userAddress);
+            updateAddress.Id = user.Address.Id;
             user.Address = updateAddress;
 
             var result = await _userManager.UpdateAsync(user);
 
-            if (!result.Succeeded) return BadRequest(new ApiValidationErrorResponse() { Errors = result.Errors.Select(E => E.Description) });
+            if (!result.Succeeded)
+            {
+                return BadRequest(new ApiValidationErrorResponse() { Errors = result.Errors.Select(E => E.Description) });
+            }
 
-            return Ok(userAddress);
+            // Map updated address back to DTO for response
+            var updatedAddressDto = _mapper.Map<UserAddressDto>(updateAddress);
+            return Ok(updatedAddressDto);
         }
 
 
