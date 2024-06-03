@@ -6,12 +6,11 @@ using Talabat.Core.Repositories.Contract;
 using Talabat.Repository.Basket;
 using Talabat.Core;
 using Talabat.Core.Services.Contract;
-using Talabat.Service.OrderService;
 using Talabat.Service;
 
 namespace Talabat.APIs.Extentions
 {
-	public static class ApplicationServicesExtention
+    public static class ApplicationServicesExtention
 	{
 		public static IServiceCollection AddApplicationServices(this IServiceCollection services)
 		{
@@ -25,7 +24,7 @@ namespace Talabat.APIs.Extentions
 
 			services.AddScoped(typeof(IProductService), typeof(ProductService));
 
-			services.AddScoped<IBasketRepository, BasketRepository>();
+			services.AddScoped(typeof(IBasketRepository), typeof(BasketRepository));
 
 			//services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 

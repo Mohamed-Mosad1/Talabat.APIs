@@ -14,11 +14,6 @@ namespace Talabat.Repository.Basket
             _database = redis.GetDatabase();
         }
 
-        public async Task<bool> DeleteBasketAsync(string basketId)
-        {
-            return await _database.KeyDeleteAsync(basketId);
-        }
-
         public async Task<CustomerBasket?> GetBasketByIdAsync(string basketId)
         {
             var basket = await _database.StringGetAsync(basketId);
@@ -31,5 +26,11 @@ namespace Talabat.Repository.Basket
             if (createdOrUpdated is false) return null;
             return await GetBasketByIdAsync(basket.Id);
         }
+
+        public async Task<bool> DeleteBasketAsync(string basketId)
+        {
+            return await _database.KeyDeleteAsync(basketId);
+        }
+
     }
 }

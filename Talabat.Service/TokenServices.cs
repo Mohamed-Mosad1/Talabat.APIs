@@ -7,7 +7,7 @@ using System.Text;
 using Talabat.Core.Entities.Identity;
 using Talabat.Core.Services.Contract;
 
-namespace Talabat.Service.AuthService
+namespace Talabat.Service
 {
     public class TokenServices : ITokenServices
     {

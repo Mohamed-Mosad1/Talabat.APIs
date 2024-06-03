@@ -5,7 +5,7 @@ using Talabat.Core.Repositories.Contract;
 using Talabat.Core.Services.Contract;
 using Talabat.Core.Specifications.OrderSpecs;
 
-namespace Talabat.Service.OrderService
+namespace Talabat.Service
 {
     public class OrderService : IOrderService
     {

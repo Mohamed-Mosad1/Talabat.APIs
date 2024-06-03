@@ -10,127 +10,129 @@ using Talabat.Repository.Identity;
 
 namespace Talabat.APIs
 {
-	public class Program
-	{
-		public static async Task Main(string[] args)
-		{
+    public class Program
+    {
+        public static async Task Main(string[] args)
+        {
 
-			var webApplicationBuilder = WebApplication.CreateBuilder(args);
+            var webApplicationBuilder = WebApplication.CreateBuilder(args);
 
-			// Add services to the container.
-			#region Configure Services
+            // Add services to the container.
+            #region Configure Services
 
-			webApplicationBuilder.Services.AddControllers().AddNewtonsoftJson(options =>
-			{
-				options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-			});
+            webApplicationBuilder.Services.AddControllers().AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            });
 
-			webApplicationBuilder.Services.AddSwaggerServices();
+            webApplicationBuilder.Services.AddSwaggerServices();
 
-			webApplicationBuilder.Services.AddApplicationServices();
+            webApplicationBuilder.Services.AddApplicationServices();
 
-			webApplicationBuilder.Services.AddDbContext<StoreContext>(options =>
-			{
-				options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("DefaultConnection"));
-			});
+            webApplicationBuilder.Services.AddDbContext<StoreContext>(options =>
+            {
+                options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("DefaultConnection"));
+            });
 
-			webApplicationBuilder.Services.AddDbContext<AppIdentityDbContext>(options =>
-			{
-				options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("IdentityConnection"));
-			});
+            webApplicationBuilder.Services.AddDbContext<AppIdentityDbContext>(options =>
+            {
+                options.UseSqlServer(webApplicationBuilder.Configuration.GetConnectionString("IdentityConnection"));
+            });
 
-			webApplicationBuilder.Services.AddSingleton<IConnectionMultiplexer>((serviceProvider) =>
-			{
-				var connection = webApplicationBuilder.Configuration.GetConnectionString("Redis") ?? "Error While Connecting to Redis Server";
-				return ConnectionMultiplexer.Connect(connection);
+            webApplicationBuilder.Services.AddSingleton<IConnectionMultiplexer>((serviceProvider) =>
+            {
+                var connectionString = webApplicationBuilder.Configuration.GetConnectionString("Redis");
 
-			});
+                return ConnectionMultiplexer.Connect(connectionString);
+            });
 
-			webApplicationBuilder.Services.AddIdentity<AppUser, IdentityRole>(options =>
-			{
-				///options.Password.RequireDigit = true;
-				///options.Password.RequiredUniqueChars = 2;
-				///options.Password.RequireNonAlphanumeric = true;
-			}).AddEntityFrameworkStores<AppIdentityDbContext>();
+            webApplicationBuilder.Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<AppIdentityDbContext>();
 
-			webApplicationBuilder.Services.AddIdentityServices(webApplicationBuilder.Configuration);
+            webApplicationBuilder.Services.AddIdentityServices(webApplicationBuilder.Configuration);
 
-			webApplicationBuilder.Services.AddCors(options=>
-			{
-				options.AddPolicy("MyPolicy", option =>
-				{
-					option.AllowAnyHeader();
-					option.AllowAnyMethod();
-					option.WithOrigins(webApplicationBuilder.Configuration["FrontBaseUrl"]);
-				});
-			});
+            var frontBaseUrl = webApplicationBuilder.Configuration["FrontBaseUrl"];
 
-			#endregion
+            if (string.IsNullOrEmpty(frontBaseUrl))
+            {
+                throw new InvalidOperationException("FrontBaseUrl is not configured.");
+            }
+
+            webApplicationBuilder.Services.AddCors(options =>
+            {
+                options.AddPolicy("MyPolicy", option =>
+                {
+                    option.AllowAnyHeader();
+                    option.AllowAnyMethod();
+                    option.WithOrigins(frontBaseUrl);
+                });
+            });
+
+            #endregion
 
 
-			var app = webApplicationBuilder.Build();
+            var app = webApplicationBuilder.Build();
 
 
-			#region Apple All Pending Migrations and Data Seeding
+            #region Apple All Pending Migrations and Data Seeding
 
-			using (var scope = app.Services.CreateScope())
-			{
-				var services = scope.ServiceProvider;
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
 
-				var _dbContext = services.GetRequiredService<StoreContext>();
-				var _identityDbContext = services.GetRequiredService<AppIdentityDbContext>();
-				var _userManager = services.GetRequiredService<UserManager<AppUser>>();
+                var _dbContext = services.GetRequiredService<StoreContext>();
+                var _identityDbContext = services.GetRequiredService<AppIdentityDbContext>();
+                var _userManager = services.GetRequiredService<UserManager<AppUser>>();
 
-				var loggerFactory = services.GetRequiredService<ILoggerFactory>();
-				var logger = loggerFactory.CreateLogger<Program>();
+                var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+                var logger = loggerFactory.CreateLogger<Program>();
 
-				try
-				{
-					await _dbContext.Database.MigrateAsync(); // Update StoreContext Database
-					await StoreContextSeed.SeedAsync(_dbContext); // Seed StoreContext Data
+                try
+                {
+                    await _dbContext.Database.MigrateAsync(); // Update StoreContext Database
+                    await StoreContextSeed.SeedAsync(_dbContext); // Seed StoreContext Data
 
-					await _identityDbContext.Database.MigrateAsync(); // Update AppIdentityDbContext Database
-					await AppIdentityDbContextSeed.SeedUserAsync(_userManager); // Seed AppIdentityDbContext Data
-				}
-				catch (DbUpdateException ex)
-				{
-					logger.LogError(ex, "An error occurred while updating the database.");
-				}
-				catch (Exception ex)
-				{
-					logger.LogError(ex, "An error occurred during data seeding or migration.");
-				}
-			}
+                    await _identityDbContext.Database.MigrateAsync(); // Update AppIdentityDbContext Database
+                    await AppIdentityDbContextSeed.SeedUserAsync(_userManager); // Seed AppIdentityDbContext Data
+                }
+                catch (DbUpdateException ex)
+                {
+                    logger.LogError(ex, "An error occurred while updating the database.");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "An error occurred during data seeding or migration.");
+                }
+            }
 
-			#endregion
+            #endregion
 
-			// Configure the HTTP request pipeline.
-			#region Configure Kestrel Middlewares
+            // Configure the HTTP request pipeline.
+            #region Configure Kestrel Middlewares
 
-			app.UseMiddleware<ExceptionMiddleware>();
+            app.UseMiddleware<ExceptionMiddleware>();
 
-			if (app.Environment.IsDevelopment())
-			{
-				app.UseSwaggerMiddleware();
-			}
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwaggerMiddleware();
+            }
 
-			app.UseStatusCodePagesWithReExecute("/errors/{0}");
+            app.UseStatusCodePagesWithReExecute("/errors/{0}");
 
-			app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
-			app.UseStaticFiles();
+            app.UseStaticFiles();
 
-			app.UseCors("MyPolicy");
+            app.UseCors("MyPolicy");
 
-			app.UseAuthentication();
+            app.UseAuthentication();
 
-			app.UseAuthorization();
+            app.UseAuthorization();
 
-			app.MapControllers();
+            app.MapControllers();
 
-			#endregion
+            #endregion
 
-			app.Run();
-		}
-	}
+            app.Run();
+        }
+    }
 }

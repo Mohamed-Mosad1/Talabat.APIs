@@ -1,12 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Talabat.Core.Entities.Identity;
 using Talabat.Core.Services.Contract;
-using Talabat.Repository.Identity;
-using Talabat.Service.AuthService;
+using Talabat.Service;
 
 namespace Talabat.APIs.Extentions
 {

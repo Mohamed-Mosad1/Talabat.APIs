@@ -1,7 +1,7 @@
 ﻿using Talabat.Core.Entities.Product;
 using Talabat.Core.Specifications.ProductSpecs;
 
-namespace Talabat.Core
+namespace Talabat.Core.Services.Contract
 {
     public interface IProductService
     {

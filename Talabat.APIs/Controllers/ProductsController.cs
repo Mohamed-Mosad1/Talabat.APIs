@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Talabat.APIs.Dtos;
 using Talabat.APIs.Error;
 using Talabat.APIs.Helpers;
-using Talabat.Core;
 using Talabat.Core.Entities.Product;
+using Talabat.Core.Services.Contract;
 using Talabat.Core.Specifications.ProductSpecs;
 
 namespace Talabat.APIs.Controllers
@@ -23,8 +22,8 @@ namespace Talabat.APIs.Controllers
             _mapper = mapper;
         }
 
-        //[Authorize] // (AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)
         [CachedAttribute(300)]
+        /*[Authorize]*/ // (AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)
         [HttpGet] // /api/Products
         public async Task<ActionResult<Pagination<ProductToReturnDto>>> GetProducts([FromQuery] ProductSpecParams specParams)
         {

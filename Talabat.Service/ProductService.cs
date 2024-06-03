@@ -1,5 +1,6 @@
 ﻿using Talabat.Core;
 using Talabat.Core.Entities.Product;
+using Talabat.Core.Services.Contract;
 using Talabat.Core.Specifications.ProductSpecs;
 
 namespace Talabat.Service

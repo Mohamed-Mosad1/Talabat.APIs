@@ -1,12 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Talabat.APIs.Error;
 using Talabat.Repository.Data;
 
 namespace Talabat.APIs.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
     public class BuggyController : BaseApiController
     {
         private readonly StoreContext _dbContext;

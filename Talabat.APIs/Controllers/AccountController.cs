@@ -34,6 +34,9 @@ namespace Talabat.APIs.Controllers
         [HttpPost("register")] // POST : /api/account/register
         public async Task<ActionResult<UserDto>> Register(RegisterDto model)
         {
+            if(CheckEmailExist(model.Email).Result.Value)
+                return BadRequest(new ApiValidationErrorResponse() { Errors = ["This Email is already exists"] });
+
             var user = new AppUser()
             {
                 DisplayName = model.DisplayName,
@@ -132,6 +135,11 @@ namespace Talabat.APIs.Controllers
             return Ok(updatedAddressDto);
         }
 
+        [HttpGet("isEmailExist")]
+        public async Task<ActionResult<bool>> CheckEmailExist(string email)
+        {
+            return await _userManager.FindByEmailAsync(email) is not null;
+        }
 
 
     }
